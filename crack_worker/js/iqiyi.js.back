@@ -1,0 +1,234 @@
+(
+function cal(urls,mid,vid)
+{
+    function base64_encode(str)
+    {
+                var c1, c2, c3;
+                var base64EncodeChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";                
+                var i = 0, len= str.length, string = '';
+
+                while (i < len)
+                {
+                        c1 = str.charCodeAt(i++) & 0xff;
+                        if (i == len)
+                        {
+                                string += base64EncodeChars.charAt(c1 >> 2);
+                                string += base64EncodeChars.charAt((c1 & 0x3) << 4);
+                                string += "==";
+                                break;
+                        }
+                        c2 = str.charCodeAt(i++);
+                        if (i == len)
+                        {
+                                string += base64EncodeChars.charAt(c1 >> 2);
+                                string += base64EncodeChars.charAt(((c1 & 0x3) << 4) | ((c2 & 0xF0) >> 4));
+                                string += base64EncodeChars.charAt((c2 & 0xF) << 2);
+                                string += "=";
+                                break;
+                        }
+                        c3 = str.charCodeAt(i++);
+                        string += base64EncodeChars.charAt(c1 >> 2);
+                        string += base64EncodeChars.charAt(((c1 & 0x3) << 4) | ((c2 & 0xF0) >> 4));
+                        string += base64EncodeChars.charAt(((c2 & 0xF) << 2) | ((c3 & 0xC0) >> 6));
+                        string += base64EncodeChars.charAt(c3 & 0x3F)
+                }
+                        return string
+        }
+    function base64_decode(str)
+    {
+                var c1, c2, c3, c4;
+                var base64DecodeChars = new Array(
+                        -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+                        -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+                        -1, -1, -1, -1, -1, -1, -1, 62, -1, -1, -1, 63, 52, 53, 54, 55, 56, 57,
+                        58, 59, 60, 61, -1, -1, -1, -1, -1, -1, -1, 0,  1,  2,  3,  4,  5,  6,
+                        7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+                        25, -1, -1, -1, -1, -1, -1, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
+                        37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, -1, -1, -1,
+                        -1, -1
+                );
+                var i=0, len = str.length, string = '';
+
+                while (i < len){
+                        do{
+                                c1 = base64DecodeChars[str.charCodeAt(i++) & 0xff]
+                        } while (
+                                i < len && c1 == -1
+                        );
+
+                        if (c1 == -1) break;
+
+                        do{
+                                c2 = base64DecodeChars[str.charCodeAt(i++) & 0xff]
+                        } while (
+                                i < len && c2 == -1
+                        );
+
+                        if (c2 == -1) break;
+
+                        string += String.fromCharCode((c1 << 2) | ((c2 & 0x30) >> 4));
+                        do{
+                                c3 = str.charCodeAt(i++) & 0xff;
+                                if (c3 == 61)
+                                        return string;
+                                c3 = base64DecodeChars[c3]
+                        } while (
+                                i < len && c3 == -1
+                        );
+
+                        if (c3 == -1) break;
+
+                        string += String.fromCharCode(((c2 & 0XF) << 4) | ((c3 & 0x3C) >> 2));
+
+                        do{
+                                c4 = str.charCodeAt(i++) & 0xff;
+                                if (c4 == 61) return string;
+                                c4 = base64DecodeChars[c4]
+                        } while (
+                                i < len && c4 == -1
+                        );
+
+                        if (c4 == -1) break;
+
+                        string += String.fromCharCode(((c3 & 0x03) << 6) | c4)
+                }
+                return string;
+    }
+    function K(n) {
+        return true
+    }
+    function R(n, e) {
+        return ((n >> 1) + (e >> 1) << 1) + (n & 1) + (e & 1)
+    }
+    function out()
+    {
+       var str="m:"+m+";n:"+n+";M:";
+       for (var i=0;i<M.length;i++)
+       {
+          str=str+M[i]+";";
+       } 
+       str = str+";A:"
+       for (var i=0;i<A.length;i++)
+       {
+          str=str+A[i]+";";
+       }
+       return str; 
+    }
+    function T(r, t, a, o) {
+        if (r>0 && r<5){
+            if (a>=0)
+            {
+                if (t<m<<6)
+                {
+                  o = [o[3], R(o[1], (C = R(R(o[0], [o[1] & o[2] | ~o[1] & o[3], o[3] & o[1] | ~o[3] & o[2], o[1] ^ o[2] ^ o[3], o[2] ^ (o[1] | ~o[3])][S = a >> 4]), R(Math.abs(Math.sin(a + 1)) * 4294967296 | 0, A[[a, 5 * a + 1, 3 * a + 5, 7 * a][S] % 16 + (t++ >>> 6)]))) << (S = [7, 12, 17, 22, 5, 9, 14, 20, 4, 11, 16, 23, 6, 10, 15, 21][4 * S + a % 4]) | C >>> 32 - S), o[1], o[2]];
+                  if (!(t & 63))
+                  {
+                      M = [R(o[0], M[0]), R(o[1], M[1]), R(o[2], M[2]), R(o[3], M[3])];
+                      //return T(r, t + (15 << 6), t & 63, M);
+                      T(r, t + (15 << 6), t & 63, M);
+                  }
+                  else
+                  {
+                     //return T(r, t, t & 63, o);
+                     T(r, t, t & 63, o);
+                  }
+                }
+                else
+                {
+                 A=[];
+                 m = "";
+                 //return T(r, 0, -3, o);
+                 T(r, 0, -3, o);
+                }
+            }
+            else if (a < 0 && a > -3)
+            {
+                if (t <o.length)
+                {
+                   A[t >> 2] |= o.charCodeAt(t) << 8 * (t++ % 4);
+                   //return T(3, t, -1, o);
+                   T(3, t, -1, o);
+                }
+                else
+                {
+                  //return T(15, t, 0, e ? "93365376061606269313761363066383" : "533333161366433606b3267613265323");
+                  //T(15, t, 0, e ? "93365376061606269313761363066383" : "533333161366433606b3267613265323");
+                  T(15, t, 0, e ? "93365376061606269313761363066383" : "7373a3a3c37353433336630613f30353");
+                }
+            }
+            else
+            {
+                if(t < 32)
+                {
+                   m += (M[t >> 3] >> (1 ^ t++ & 7) * 4 & 15).toString(16);
+                   //return T(r, t, a--, o);
+                   T(r, t, a--, o);
+                }
+            }
+        }
+        else if (r > 6 && r < 10){
+            if(a < o.length >> 1)
+            {
+               A[t >> 2] |= (parseInt(o.substr((a >> 2) * 8, 8), 16) >> 8 * (a % 4) & 255 ^ a % 1) << ((t++ & 3) << 3);
+               //return T(9, t, a + 1, o);
+               T(9, t, a + 1, o);
+            }
+            else
+            {
+                //return T(12, t, !K("Q") * 1, n);
+                T(12, t, !K("Q") * 1, n);
+            }
+        }
+        else if (r > 11 && r < 14)
+        {
+            r = base64_decode(unescape(o));
+            if (a < r.length)
+            {
+               A[t >> 2] |= r.charCodeAt(a++) << 8 * (t % 4);
+               //return T(12, ++t, a, n);
+               T(12, ++t, a, n);
+            }
+            else
+            {
+               //if (K(base64_decode("X19wYWdlX3N0YXJ0")))
+               //{
+               A[t >> 2] |= 1 << (t % 4 <<3) +7;
+               //}
+               A[m = (t + 8 >> 6 << 4) + 14] = t << 3;
+               //return T(3, 0, 0, M);
+               T(3, 0, 0, M);
+            }
+        }
+        else if (r > 14 && r < 17)
+        {
+            if (a < o.length >> 1)
+            {
+              A[t >> 2] |= (parseInt(o.substr((a >> 2) * 8, 8).split("").reverse().join(""), 16) >> 8 * (a % 4) & 255 ^ a % 7) << ((t++ & 3) << 3);
+               //return T(16, t, a + 1, o);
+               T(16, t, a + 1, o);
+            }
+            else
+            {
+                 //return T(7, t, 0, e ? "63663762376362366433633262663465" : "64316539343233356235343631663866");
+                 //T(7, t, 0, e ? "63663762376362366433633262663465" : "64316539343233356235343631663866");
+                 T(7, t, 0, e ? "63663762376362366433633262663465" : "34363262636431346466316435386161");
+            }
+        }
+    }
+    
+    var num = 0
+    var e,r,t,o,c;
+    var Z = ["slice", "call", "querySelectorAll", "length", "push", "shift", "indexOf", "document", "innerHTML", "match", "forEach","1f"];
+    var m, _, n = escape(base64_encode(mid+"")), C, S, M = [C = 1732584193, S = -271733879, ~C, ~S], A = [];
+    _ = (new Date).getTime();
+    m = _-7+""
+    tk = m
+    m = escape(!e ? base64_encode(m) : base64_encode(m + t + "" + r));
+    T(1, 0, -1, base64_decode(unescape(m)));
+    w = urls+";"+"2"+";&tim="+_
+    w = encodeURIComponent(w)
+    w = encodeURIComponent(w)
+    url = "http://cache.m.iqiyi.com/jp/tmts/"+mid+"/"+vid+"/?platForm=h5&rate=1&tvid="+mid+"&vid="+vid+"&cupid=qc_100001_100186&type=mp4&qyid=i86oc4g5j665sc7fr4r5asx3&nolimit=0&agenttype=13&src=d846d0c32d664d32b6b54ea48997a589&sc="+m+"&__refI="+w+"&qd_wsz=MF8w&t="+tk+"&__jsT=sgve"
+    return url
+}
+)

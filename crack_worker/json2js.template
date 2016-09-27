@@ -1,0 +1,66 @@
+var request;
+getUrls();
+function getUrls()
+{
+    if(typeof(request) == "undefined")
+    {
+        request = new XMLHttpRequest();
+    }
+    var res = '%s';
+    var resObj = JSON.parse(res);
+    if(typeof(resObj.type) != "undefined" && resObj.type == "0")
+    {
+        return JSON.stringify(resObj);
+    }else if(typeof(resObj.type) != "undefined" && resObj.type == "1")
+    {
+        var start = resObj.start;
+        var end = resObj.end;
+        var segs = resObj.seg;
+        var some;
+        for(var format in segs)
+        {
+            format_segs = segs[format]; 
+            for(var i=0; i<format_segs.length; i++)
+            {
+                var seg = format_segs[i];
+                var url = seg.url;
+                sendRequest(url, format, i);
+            }
+        }
+        return JSON.stringify(resObj);
+
+        function sendRequest(url, format, seg_index)
+        {
+            request.open("GET", url);
+            request.onreadystatechange = function()
+            {
+                if(request.readyState == 4 && request.status == 200)
+                {
+                    var body = request.responseText;
+                    if(typeof(body) != "undefined")
+                    {
+                        var startIndex = body.indexOf(start); 
+                        index = startIndex;
+                        if(startIndex>=0)
+                        {
+                            startIndex = startIndex + start.length;
+                            var endIndex = body.indexOf(end, startIndex);
+                            if(endIndex>=0)
+                            {
+                                url = body.substring(startIndex, endIndex);
+                                url = url.replace(/[\\]/g, "");
+                                var format_segs = segs[format];
+                                var seg = format_segs[seg_index];
+                                seg.url = url;
+                            }
+                        }
+                    }
+                }
+            };
+            request.send();
+        }
+    }else
+    {
+        return JSON.stringify(resObj);
+    }
+}

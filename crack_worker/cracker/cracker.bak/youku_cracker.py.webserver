@@ -1,0 +1,59 @@
+# -*- coding:utf-8 -*-
+import re
+import json
+import traceback
+from tornado import log
+
+import sys
+sys.path.append('.')
+
+from common.util import ErrorCode
+from phantomjs.fetcher import Fetcher
+import cs
+
+class CYoukuCracker(object):
+
+    def __init__(self):
+        #flash_url = 'http://192.168.16.159/crack.html?site=%s&id=%s'
+        self._flash_url = 'http://192.168.16.159/test1.html?id=%s'
+        self._phantomjs_server = 'http://%s:%s' % (cs.phantomjs_host, cs.phantomjs_port)
+        self._fetcher = Fetcher(phantomjs_proxy=self._phantomjs_server, user_agent='', pool_size=100, async=False)
+
+    def crack(self, para):
+        result = {}
+        try:
+            yvid = para['yvid']
+            url = self._flash_url % yvid
+            response = self._fetcher.fetch(url)
+            if not response:
+                result = {'error': 1, 'code': ErrorCode.NO_RESPONSE}
+            elif 'status_code' in response and str(response['status_code']) == '200':
+                content = response['content']
+                if not content:
+                    result = {'error': 1, 'code': ErrorCode.NO_RESPONSE}
+                else:
+                    regex_express = '<body>(.*)</body>'
+                    regex_pattern = re.compile(regex_express)
+                    match_results = regex_pattern.search(content)
+                    if match_results:
+                        body = match_results.groups()[0]
+                        body = body.strip()
+                        if not body:
+                            result = {'error': 1, 'code': ErrorCode.PARSE_ERROR}
+                        else:
+                            result = json.loads(body)
+                    else:
+                        result = {'error': 1, 'code': ErrorCode.PARSE_ERROR}
+            else:
+                result = {'error': 1, 'code': ErrorCode.PARSE_ERROR}
+        except Exception, e:
+            log.app_log.error(traceback.format_exc())
+            result = {'error': 1, 'code': ErrorCode.NO_RESPONSE}
+        finally:
+            return result 
+
+if __name__ == '__main__':
+    cracker = CYoukuCracker()
+    para = {'url': 'http://v.youku.com/v_show/id_XMTM5NTc5OTk0NA==.html', 'vid': 348388906, 'yvid': "XMTM5NTc5OTk0NA==", 'site':'youku'}
+    res = cracker.crack(para)
+    print json.dumps(res)

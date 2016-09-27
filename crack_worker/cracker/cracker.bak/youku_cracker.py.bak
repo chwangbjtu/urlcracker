@@ -1,0 +1,84 @@
+# -*- coding:utf-8 -*-
+import traceback
+from tornado import log
+import json
+import os
+import PyV8
+
+import sys
+sys.path.append('.')
+
+from common.util import ErrorCode, ParseType
+from common.http_client import HttpDownload
+
+'''
+class CYoukuCracker(object):
+
+    def __init__(self):
+        self._ctx = PyV8.JSContext()
+        self._ctx.enter()
+        self._httpcli = HttpDownload()
+        #load js
+        self._js = ""
+        base_dir = os.path.abspath(".")
+        filename = base_dir + "/js/youku.js"
+        jsfile = open(filename)
+        #jsfile = open('/tmp/crack_server/cracker/youku.js')
+        try:
+            self._js = jsfile.read( )
+        finally:
+            jsfile.close()
+
+        self._func = self._ctx.eval(self._js)
+
+    def crack(self, para):
+        #log.app_log.info('%s : %s' % (self.__class__.__name__, json.dumps(para)))
+        result = {}
+        try:
+            tvid = para['yvid']
+
+            #turl = "http://v.youku.com/player/getPlayList/VideoIDS/" + tvid + "/Pf/4/ctype/12/ev/1"
+            turl = "http://play.youku.com/play/get.json?vid=" + tvid + "&ct=12"
+            resp = self._httpcli.get_data(turl)
+            if resp:
+                tjresp = json.loads(resp)
+                jresp = tjresp["data"]
+                sjresp = json.dumps(jresp)
+                #sjresp = json.dumps(tjresp["data"][0])
+
+                res = self._func(sjresp)
+                jres = json.loads(res)
+
+                types = {"3gphd":"normal","mp4":"high"}
+                result["format"] = []
+                result["seg"] = {}
+                for (type,name) in types.items():
+                    if type in jres:
+                        segs = []
+                        seg_num = len(jres[type])
+                        for i in range(seg_num):
+                            seg = {}
+                            seg["url"] = jres[type][i]["src"]
+                            seg["duration"] = str(jres[type][i]["seconds"])
+                            segs.append(seg)
+                        result["seg"][name] = segs
+                        result["format"].append(name)
+                        result["type"]=ParseType.DIRECT
+                        result["start"]=""
+                        result["end"]=""
+        
+            #print json.dumps(resp)
+        except Exception, e:
+            log.app_log.error(traceback.format_exc())
+            result = {'error': 1, 'code': ErrorCode.NO_RESPONSE}
+        finally:
+            return result 
+
+if __name__ == '__main__':
+    youku = CYoukuCracker()
+    #para = {'url': 'http://v.youku.com/v_show/id_XMTM5NTE0ODU1Ng==.html', 'vid': 348388906, 'yvid': "XMTM5NTE0ODU1Ng==", 'site':'youku'}
+    para = {'url': 'http://v.youku.com/v_show/id_XMTM5MzU1NTYyNA==.html', 'vid': 348388906, 'yvid': "XMTM5MzU1NTYyNA==", 'site':'youku'}
+    para = {'url': 'http://v.youku.com/v_show/id_XMTM5NTc5OTk0NA==.html', 'vid': 348388906, 'yvid': "XMTM5NTc5OTk0NA==", 'site':'youku'}
+    res = youku.crack(para)
+    print json.dumps(res)
+'''
